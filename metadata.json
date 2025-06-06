@@ -1,0 +1,5 @@
+{
+  "name": "BEAUTY ROAD スケジュール調整",
+  "description": "BEAUTY ROAD番組専用の日程調整アプリ。ユーザーが個別ページで利用可能な日時を入力し、管理者が全体の状況を確認・調整できます。",
+  "requestFramePermissions": []
+}

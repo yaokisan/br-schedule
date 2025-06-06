@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Link, useLocation, matchPath } from 'react-router-dom';
+import headerLogo from '../header-logo.png';
 
 const Header: React.FC = () => {
   const location = useLocation();
@@ -16,7 +16,12 @@ const Header: React.FC = () => {
   const hoverTextColor = isAdminPage ? 'hover:text-theme-blue-200' : 'hover:text-theme-pink-200';
   const navHoverBgColor = isAdminPage ? 'hover:bg-theme-blue-700' : 'hover:bg-theme-pink-700';
 
-  const titleContent = "🗓️ BEAUTY ROAD スケジュール調整";
+  const titleContent = (
+    <>
+      <img src={headerLogo} alt="BEAUTY ROAD スケジュール調整" className="h-5 sm:h-6 w-auto" />
+      <span className="sr-only">BEAUTY ROAD スケジュール調整</span>
+    </>
+  );
 
   return (
     <header className={`${headerBgColor} text-white shadow-md`}>

@@ -16,6 +16,7 @@ interface UserEntryRow {
   event_id: string;
   name: string;
   availabilities: DailyAvailability[];
+  comment?: string;
   last_updated_at: string;
 }
 
@@ -33,6 +34,7 @@ const rowToUserEntry = (row: UserEntryRow): UserEntry => ({
   eventId: row.event_id,
   name: row.name,
   availabilities: row.availabilities,
+  comment: row.comment,
   lastUpdatedAt: row.last_updated_at,
 });
 
@@ -118,6 +120,7 @@ export const addUserEntry = async (
         event_id: eventId,
         name: entryData.name,
         availabilities: entryData.availabilities,
+        comment: entryData.comment,
       },
       { defaultToNull: false },
     )
@@ -135,6 +138,7 @@ export const updateUserEntry = async (
   const payload: Partial<UserEntryRow> = {};
   if (updates.name !== undefined) payload.name = updates.name;
   if (updates.availabilities !== undefined) payload.availabilities = updates.availabilities as any;
+  if (updates.comment !== undefined) payload.comment = updates.comment;
 
   const { data, error } = await supabase
     .from<UserEntryRow>('user_entries')

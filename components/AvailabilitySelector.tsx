@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AvailabilityStatus, ALL_AVAILABILITY_STATUSES } from '../types';
 
@@ -8,45 +7,47 @@ interface AvailabilitySelectorProps {
 }
 
 const AvailabilitySelector: React.FC<AvailabilitySelectorProps> = ({ selectedStatus, onChange }) => {
-  const getButtonClass = (status: AvailabilityStatus) => {
-    let baseClass = 'px-3 py-2 rounded-md text-sm font-medium transition-all duration-150 ease-in-out border-2 ';
-    if (selectedStatus === status) {
-      switch (status) {
-        case AvailabilityStatus.AVAILABLE:
-          return baseClass + 'bg-green-500 text-white border-green-600 shadow-md';
-        case AvailabilityStatus.MAYBE:
-          return baseClass + 'bg-yellow-400 text-slate-800 border-yellow-500 shadow-md';
-        case AvailabilityStatus.UNAVAILABLE:
-          return baseClass + 'bg-red-500 text-white border-red-600 shadow-md';
-        default:
-          return baseClass + 'bg-slate-200 text-slate-700 border-slate-300';
-      }
-    }
-    // Not selected
+  const getStatusInfo = (status: AvailabilityStatus) => {
     switch (status) {
         case AvailabilityStatus.AVAILABLE:
-          return baseClass + 'bg-green-100 text-green-700 border-green-300 hover:bg-green-200';
+        return {
+          selected: 'bg-green-500 text-white shadow-lg ring-2 ring-offset-2 ring-green-500',
+          unselected: 'bg-white text-green-500 border-2 border-green-400 hover:bg-green-50'
+        };
         case AvailabilityStatus.MAYBE:
-          return baseClass + 'bg-yellow-100 text-yellow-700 border-yellow-300 hover:bg-yellow-200';
+        return {
+          selected: 'bg-yellow-500 text-white shadow-lg ring-2 ring-offset-2 ring-yellow-500',
+          unselected: 'bg-white text-yellow-500 border-2 border-yellow-400 hover:bg-yellow-50'
+        };
         case AvailabilityStatus.UNAVAILABLE:
-          return baseClass + 'bg-red-100 text-red-700 border-red-300 hover:bg-red-200';
+        return {
+          selected: 'bg-red-500 text-white shadow-lg ring-2 ring-offset-2 ring-red-500',
+          unselected: 'bg-white text-red-500 border-2 border-red-400 hover:bg-red-50'
+        };
         default:
-          return baseClass + 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200';
+        return { selected: '', unselected: 'bg-slate-100 text-slate-600 border-slate-300' };
       }
   };
+
+  const baseClass = 'rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold transition-all duration-200 focus:outline-none';
   
   return (
-    <div className="flex space-x-2">
-      {ALL_AVAILABILITY_STATUSES.map((status) => (
+    <div className="flex space-x-3">
+      {ALL_AVAILABILITY_STATUSES.map((status) => {
+        const { selected, unselected } = getStatusInfo(status);
+        const isSelected = selectedStatus === status;
+        return (
         <button
           key={status}
           type="button"
           onClick={() => onChange(status)}
-          className={getButtonClass(status)}
+            className={`${baseClass} ${isSelected ? selected : unselected}`}
+            aria-pressed={isSelected}
         >
           {status}
         </button>
-      ))}
+        );
+      })}
     </div>
   );
 };

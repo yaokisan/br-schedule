@@ -1,6 +1,5 @@
-
 export enum AvailabilityStatus {
-  AVAILABLE = '⚪',
+  AVAILABLE = '◎',
   MAYBE = '△',
   UNAVAILABLE = '×',
 }
@@ -12,13 +11,11 @@ export const ALL_AVAILABILITY_STATUSES: AvailabilityStatus[] = [
 ];
 
 export enum MaybeReason {
-  PARTIALLY_AVAILABLE = '一部の時間帯 OK',
   NEEDS_ADJUSTMENT = '調整が必要',
   OTHER = 'その他',
 }
 
 export const ALL_MAYBE_REASONS: MaybeReason[] = [
-  MaybeReason.PARTIALLY_AVAILABLE,
   MaybeReason.NEEDS_ADJUSTMENT,
   MaybeReason.OTHER,
 ];
@@ -49,6 +46,7 @@ export interface UserEntry {
   eventId: string;
   name: string;
   availabilities: DailyAvailability[];
+  comment?: string;
   lastUpdatedAt: string; // ISO date string
 }
 

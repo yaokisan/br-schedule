@@ -1,4 +1,3 @@
-
 export function getDatesInRange(startDateStr: string, endDateStr: string): string[] {
   const dates: string[] = [];
   // Ensure dates are parsed in UTC to avoid timezone off-by-one issues with YYYY-MM-DD
@@ -29,5 +28,20 @@ export function formatTime(isoString: string): string {
   if (!isoString) return '';
   const date = new Date(isoString);
   return date.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+}
+
+export function formatDateTime(isoString: string): string {
+  if (!isoString) return '';
+  const date = new Date(isoString);
+  const formattedDate = date.toLocaleDateString('ja-JP', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  const formattedTime = date.toLocaleTimeString('ja-JP', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  return `${formattedDate} ${formattedTime}`;
 }
     

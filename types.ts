@@ -1,6 +1,5 @@
-
 export enum AvailabilityStatus {
-  AVAILABLE = '⚪',
+  AVAILABLE = '◎',
   MAYBE = '△',
   UNAVAILABLE = '×',
 }
@@ -37,6 +36,7 @@ export interface SlotAvailability {
   slotId: string; // 'AM' or 'PM'
   status: AvailabilityStatus | null;
   reasons: MaybeReason[]; // Use an array for multiple checks
+  otherReasonComment?: string;
 }
 
 export interface DailyAvailability {
@@ -49,6 +49,7 @@ export interface UserEntry {
   eventId: string;
   name: string;
   availabilities: DailyAvailability[];
+  comment?: string;
   lastUpdatedAt: string; // ISO date string
 }
 

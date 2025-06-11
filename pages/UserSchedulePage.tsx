@@ -131,28 +131,7 @@ const UserSchedulePage: React.FC = () => {
                 const newStatus = s.status === status ? null : status;
                 // If changing to not-Maybe, clear reasons
                 const reasons = newStatus === AvailabilityStatus.MAYBE ? s.reasons : [];
-                const otherReasonComment = newStatus === AvailabilityStatus.MAYBE ? s.otherReasonComment : '';
-                return { ...s, status: newStatus, reasons, otherReasonComment };
-              }
-              return s;
-            }),
-          };
-        }
-        return da;
-      });
-      setCurrentEntry({ ...currentEntry, availabilities: updatedAvailabilities });
-    }
-  };
-
-  const handleOtherReasonChange = (date: string, slotId: string, comment: string) => {
-    if (currentEntry) {
-      const updatedAvailabilities = currentEntry.availabilities.map(da => {
-        if (da.date === date) {
-          return {
-            ...da,
-            slots: da.slots.map(s => {
-              if (s.slotId === slotId) {
-                return { ...s, otherReasonComment: comment };
+                return { ...s, status: newStatus, reasons };
               }
               return s;
             }),
@@ -175,11 +154,7 @@ const UserSchedulePage: React.FC = () => {
                 const newReasons = checked
                   ? [...(s.reasons || []), reason]
                   : (s.reasons || []).filter(r => r !== reason);
-
-                // If "Other" is unchecked, clear the comment
-                const otherReasonComment = newReasons.includes(MaybeReason.OTHER) ? s.otherReasonComment : '';
-
-                return { ...s, reasons: newReasons, otherReasonComment };
+                return { ...s, reasons: newReasons };
               }
               return s;
             }),
@@ -324,8 +299,6 @@ const UserSchedulePage: React.FC = () => {
                               title="理由 (複数選択可):"
                               selectedReasons={slotAvail.reasons}
                               onChange={(reason, checked) => handleReasonChange(dailyAvail.date, slotAvail.slotId, reason, checked)}
-                              otherReasonComment={slotAvail.otherReasonComment}
-                              onOtherReasonCommentChange={(comment) => handleOtherReasonChange(dailyAvail.date, slotAvail.slotId, comment)}
                             />
                           )}
                         </div>

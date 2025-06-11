@@ -173,7 +173,6 @@ export const initializeAvailabilities = (
       slotId: slot.id,
       status: null,
       reasons: [],
-      otherReasonComment: '',
     })),
   }));
 };

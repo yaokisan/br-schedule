@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AdminEvent, UserEntry, DailyAvailability, SlotAvailability, AvailabilityStatus, MaybeReason, DEFAULT_TIME_SLOTS } from '../types';
 import { getAdminEventById, getUserEntriesForEvent, addUserEntry, updateUserEntry, getUserEntryById, initializeAvailabilities } from '../services/scheduleService';
@@ -25,6 +25,18 @@ const UserSchedulePage: React.FC = () => {
   const [unfilledSlots, setUnfilledSlots] = useState<Set<string>>(new Set());
   const [newEntryDraft, setNewEntryDraft] = useState<Partial<UserEntry> & { availabilities: DailyAvailability[] } | null>(null);
 
+  // --- Progress Calculation ---
+  const progress = useMemo(() => {
+    if (!currentEntry) return { filled: 0, total: 0, percentage: 0 };
+    
+    const totalSlots = currentEntry.availabilities.reduce((acc, daily) => acc + daily.slots.length, 0);
+    const filledSlots = currentEntry.availabilities.reduce((acc, daily) => 
+      acc + daily.slots.filter(slot => slot.status !== null).length, 0);
+    
+    const percentage = totalSlots > 0 ? Math.round((filledSlots / totalSlots) * 100) : 0;
+
+    return { filled: filledSlots, total: totalSlots, percentage };
+  }, [currentEntry]);
 
   const fetchEventData = useCallback(async () => {
     if (!eventId) return;
@@ -261,9 +273,41 @@ const UserSchedulePage: React.FC = () => {
       {/* "管理者ページへ戻る" ボタンは削除されました */}
 
       {currentEntry && (
-        <Modal isOpen={isModalOpen} onClose={handleCloseModal} title={isEditing ? "予定を編集" : "予定を新規追加"} size="xl">
+        <Modal 
+          isOpen={isModalOpen} 
+          onClose={handleCloseModal} 
+          title={isEditing ? "予定を編集" : "予定を新規追加"} 
+          size="xl"
+          stickyHeader={
+            progress.total > 0 && (
+              <div className="space-y-1">
+                <div className="flex justify-between text-xs font-medium text-slate-500">
+                  <span>進捗</span>
+                  <span>{progress.filled} / {progress.total}</span>
+                </div>
+                <div className="w-full bg-slate-200 rounded-full h-2">
+                  <div 
+                    className="bg-theme-pink-500 h-2 rounded-full transition-all duration-300" 
+                    style={{ width: `${progress.percentage}%` }}
+                  ></div>
+                </div>
+              </div>
+            )
+          }
+          footer={
+            <div className="flex flex-col items-stretch w-full space-y-2">
+               {formError && <p className="text-red-500 text-sm bg-red-100 p-3 rounded-md text-center w-full">{formError}</p>}
+              <div className="flex justify-end space-x-3 w-full">
+                <Button onClick={handleCloseModal} variant="secondary" disabled={isSubmitting} colorScheme="pink">キャンセル</Button>
+                <Button onClick={handleSubmit} variant="primary" isLoading={isSubmitting} disabled={isSubmitting} colorScheme="pink">
+                  {isEditing ? "更新" : "送信"}
+                </Button>
+              </div>
+            </div>
+          }
+        >
           <div className="space-y-4">
-            {formError && <p className="text-red-500 text-sm bg-red-100 p-2 rounded-md">{formError}</p>}
+            {/* Name Input */}
             <div>
               <label htmlFor="userName" className="block text-sm font-medium text-slate-700 mb-1">名前</label>
               <input
@@ -276,7 +320,8 @@ const UserSchedulePage: React.FC = () => {
               />
             </div>
             
-            <div className="space-y-6 max-h-[50vh] overflow-y-scroll p-1 pr-2">
+            {/* Availability Inputs */}
+            <div className="space-y-6">
               {currentEntry.availabilities.map(dailyAvail => (
                 <div key={dailyAvail.date} className="p-4 border border-slate-200 rounded-lg bg-slate-50">
                   <h4 className="text-lg font-semibold text-slate-700 mb-3">{formatDate(dailyAvail.date)}</h4>
@@ -309,6 +354,7 @@ const UserSchedulePage: React.FC = () => {
               ))}
             </div>
 
+            {/* Comment Area */}
             <div className='mt-4'>
                 <label htmlFor="comment" className="block text-sm font-medium text-slate-700 mb-1">コメント (任意)</label>
                 <textarea
@@ -319,13 +365,6 @@ const UserSchedulePage: React.FC = () => {
                   rows={3}
                   placeholder="その他補足事項があればご記入ください。"
                 />
-            </div>
-
-            <div className="flex justify-end space-x-3 pt-3 border-t border-slate-200 mt-4">
-              <Button onClick={handleCloseModal} variant="secondary" disabled={isSubmitting} colorScheme="pink">キャンセル</Button>
-              <Button onClick={handleSubmit} variant="primary" isLoading={isSubmitting} disabled={isSubmitting} colorScheme="pink">
-                {isEditing ? "更新" : "送信"}
-              </Button>
             </div>
           </div>
         </Modal>
